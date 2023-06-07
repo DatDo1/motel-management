@@ -14,14 +14,16 @@ class CreateRoomBookingsTable extends Migration
     public function up()
     {
         Schema::create('room_bookings', function (Blueprint $table) {
-            $table->date('checkin_date')->primary();
-            $table->unsignedBigInteger('booking_id')->primary();
-            $table->unsignedBigInteger('room_id')->primary();
+            $table->date('checkin_date');
+            $table->unsignedBigInteger('booking_id');
+            $table->unsignedBigInteger('room_id');
             $table->date('checkout_date');
             $table->unsignedBigInteger('pay_price');
             $table->timestamps();
             $table->softDeletes();
             $table->enum('delete_flag', ['0','1'])->default('0');
+
+            $table->primary(array('checkin_date', 'booking_id', 'room_id'));
         });
     }
 

@@ -13,7 +13,7 @@ class CreateCustomersTable extends Migration
      */
     public function up()
     {
-        Schema::table('customers', function (Blueprint $table) {
+        Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->date('start_date')->nullable();
             $table->string('basic_salary', 20)->nullable();

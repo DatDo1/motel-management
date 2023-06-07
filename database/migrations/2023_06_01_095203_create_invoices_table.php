@@ -23,7 +23,7 @@ class CreateInvoicesTable extends Migration
             $table->enum('delete_flag', ['0','1'])->default('0');
             $table->unsignedBigInteger('employee_id');
 
-            $table->foreign('employee_id')->references('id')->on('employee');
+            $table->foreign('employee_id')->references('id')->on('employees');
         });
     }
 

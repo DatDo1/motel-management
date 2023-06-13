@@ -15,6 +15,7 @@ class CreateOccasionPricingsTable extends Migration
     {
         Schema::create('occasion_pricings', function (Blueprint $table) {
             $table->id();
+            $table->string('uuid', 255);
             $table->string('time', 255);    
             $table->timestamps();
             $table->softDeletes();

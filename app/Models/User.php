@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -18,9 +19,22 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'uuid',
         'name',
+        'phone_number',
+        'image',
+        'citizen_identification',
+        'address',
+        'user_level',
+        'birthday',
+        'gender',
         'email',
         'password',
+        'remember_token',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'delete_flag'
     ];
 
     /**
@@ -38,7 +52,13 @@ class User extends Authenticatable
      *
      * @var array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    // protected $casts = [
+    //     'email_verified_at' => 'datetime',
+    // ];
+    public function customer(): HasOne{
+        return $this->hasOne(Customer::class, 'customers');
+    }
+    public function employee(): HasOne {
+        return $this->hasOne(Employee::class, 'employees');
+    }
 }

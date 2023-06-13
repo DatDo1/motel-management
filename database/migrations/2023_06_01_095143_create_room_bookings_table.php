@@ -17,6 +17,7 @@ class CreateRoomBookingsTable extends Migration
             $table->date('checkin_date');
             $table->unsignedBigInteger('booking_id');
             $table->unsignedBigInteger('room_id');
+            $table->string('uuid', 255);
             $table->date('checkout_date');
             $table->unsignedBigInteger('pay_price');
             $table->timestamps();

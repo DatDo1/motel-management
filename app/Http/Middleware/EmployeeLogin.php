@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AdminLogin
+class EmployeeLogin
 {
     /**
      * Handle an incoming request.
@@ -17,7 +17,7 @@ class AdminLogin
      */
     public function handle(Request $request, Closure $next)
     {
-        if(Auth::check() && Auth::user()->user_level == 3){
+        if(Auth::check() && Auth::user()->user_level == 2 || Auth::check() && Auth::user()->user_level == 3){
             return $next($request);
         }else {
             Auth::logout();

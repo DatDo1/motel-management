@@ -15,6 +15,7 @@ class CreateFacilityTypesTable extends Migration
     {
         Schema::create('facility_types', function (Blueprint $table) {
             $table->id();
+            $table->string('uuid', 255);
             $table->string('name', 255);
             $table->timestamps();
             $table->softDeletes();

@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\Admin\HomeController as AHomeController;
+use App\Http\Controllers\Client\HomeController as CHomeController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,21 +16,15 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('', [CHomeController::class, 'index']);
+Route::get('admin', [AHomeController::class, 'index']);
 
-Route::get('/', function () {
-    return view('admin.index');
-});
 
 // Route::group(['middleware' => 'auth'], function (){
-//     Route::group(['middleware' => 'isUser', 'prefix' => 'user'], function (){
-        
-//     });
-    
-//     Route::group(['middleware' => 'isAdmin', 'prefix' => 'admin'], function (){
-//         Route::resource('');
-//     });
+//     Route::get('', [HomeController::class, 'index']);
+
 // });
 
-Auth::routes();
+// Auth::routes();
 
-Route::get('/login', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/test', [UserController::class, 'index']);

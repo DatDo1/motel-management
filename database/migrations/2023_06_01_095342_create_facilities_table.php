@@ -15,6 +15,7 @@ class CreateFacilitiesTable extends Migration
     {
         Schema::create('facilities', function (Blueprint $table) {
             $table->id();
+            $table->string('uuid', 255);
             $table->string('name', 255);
             $table->unsignedBigInteger('price');
             $table->timestamps();

@@ -15,6 +15,7 @@ class CreateOccasionPricingRoomTypesTable extends Migration
     {
         Schema::create('occasion_pricing__room_types', function (Blueprint $table) {
             $table->id();
+            $table->string('uuid', 255);
             $table->unsignedBigInteger('real_price');
             $table->timestamps();
             $table->softDeletes();

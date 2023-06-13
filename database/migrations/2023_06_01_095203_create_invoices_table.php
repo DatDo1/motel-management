@@ -15,6 +15,7 @@ class CreateInvoicesTable extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
+            $table->string('uuid', 255);
             $table->unsignedBigInteger('total_price');
             $table->string('payment_method', 100);
             $table->string('status', 100);

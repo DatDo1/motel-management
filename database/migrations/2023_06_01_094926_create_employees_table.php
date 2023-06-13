@@ -15,6 +15,7 @@ class CreateEmployeesTable extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
+            $table->string('uuid', 255);
             $table->string('credit_card', 50)->nullable();
             $table->unsignedBigInteger('user_id');
 

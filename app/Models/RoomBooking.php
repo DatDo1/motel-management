@@ -8,4 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class RoomBooking extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'checkin_date',	
+        'booking_id',	
+        'room_id',	
+        'uuid',	
+        'checkout_date',	
+        'pay_price',	
+        'created_at',	
+        'updated_at',	
+        'deleted_at',	
+        'delete_flag',
+    ];
+    
 }

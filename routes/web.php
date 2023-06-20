@@ -5,6 +5,10 @@ use App\Http\Controllers\Client\HomeController as CHomeController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\FacilityController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +21,13 @@ use App\Http\Controllers\Admin\UserController;
 |
 */
 Route::get('', [CHomeController::class, 'index']);
-Route::get('admin', [AHomeController::class, 'index']);
+
+Route::get('adm', [AHomeController::class, 'index']);
+
+
+Route::resource('admin/users', UserController::class);
+Route::resource('admin/rooms', RoomController::class);
+Route::resource('admin/facilities', FacilityController::class);
 
 
 // Route::group(['middleware' => 'auth'], function (){
@@ -26,5 +36,3 @@ Route::get('admin', [AHomeController::class, 'index']);
 // });
 
 // Auth::routes();
-
-Route::get('/test', [UserController::class, 'index']);

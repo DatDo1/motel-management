@@ -15,4 +15,10 @@ class UserService {
     public function getAllUsers() {
         return $this->userRepository->all();
     }
+    public function updateUser($id, $data = []){
+        return $this->userRepository->update($id, $data);
+    }
+    public function deleteUser($id){
+        return $this->userRepository->delete($id);
+    }
 }

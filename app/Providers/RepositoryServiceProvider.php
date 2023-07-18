@@ -16,6 +16,7 @@ use App\Repositories\Facility\FacilityRepository;
 use App\Repositories\RoomType\RoomTypeRepository;
 use App\Repositories\Room\RoomRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
+use App\Repositories\RoomBooking\RoomBookingRepository;
 use App\Repositories\Booking\BookingRepositoryInterface;
 use App\Repositories\Invoice\InvoiceRepositoryInterface;
 use App\Repositories\FacilityType\FacilityTypeRepository;
@@ -24,6 +25,7 @@ use App\Repositories\Employee\EmployeeRepositoryInterface;
 use App\Repositories\Facility\FacilityRepositoryInterface;
 use App\Repositories\RoomType\RoomTypeRepositoryInterface;
 use App\Repositories\OccasionPricing\OccasionPricingRepository;
+use App\Repositories\RoomBooking\RoomBookingRepositoryInterface;
 use App\Repositories\FacilityType\FacilityTypeRepositoryInterface;
 use App\Repositories\OccasionPricing\OccasionPricingRepositoryInterface;
 use App\Repositories\OccasionPricing_RoomType\OccasionPricing_RoomTypeRepository;
@@ -50,6 +52,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(OccasionPricing_RoomTypeRepositoryInterface::class, OccasionPricing_RoomTypeRepository::class);
         $this->app->bind(RoomRepositoryInterface::class, RoomRepository::class);
         $this->app->bind(RoomTypeRepositoryInterface::class, RoomTypeRepository::class);
+        $this->app->bind(RoomBookingRepositoryInterface::class, RoomBookingRepository::class);
     }
 
     /**

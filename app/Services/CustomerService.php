@@ -13,12 +13,15 @@ class CustomerService {
         return $this->customerRepository->all();
     }
     public function createCustomer($data = []){
-        $this->customerRepository->create($data);
+        return $this->customerRepository->create($data);
+    }
+    public function findCustomerById($id){
+        return $this->customerRepository->findByID($id);
     }
     public function updateCustomer($id, $data = []){
-        $this->customerRepository->update($id, $data);
+        return $this->customerRepository->update($id, $data);
     }
     public function deleteCustomer($id){
-        $this->customerRepository->delete($id);
+        return $this->customerRepository->delete($id);
     }
 }

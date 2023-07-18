@@ -63,7 +63,7 @@ a {
 }
 
 .table tbody tr td:first-child {
-    font-size: 1.125em;
+    /* font-size: 1.125em; */
     font-weight: 300;
 }
 
@@ -71,7 +71,7 @@ a {
     font-size: 0.875em;
     vertical-align: middle;
     border-top: 1px solid #e7ebee;
-    padding: 12px 8px;
+    /* padding: 12px 8px; */
 }
 
 a:hover {
@@ -79,5 +79,60 @@ a:hover {
 }
 
 .create-form {
-    margin: 64px 12px 0 12px;
+    margin: 64px 12px 0 -48px;
 }
+
+.w-151 {
+    width: 151px;
+}
+
+.p-8 {
+    padding: 8px;
+}
+
+.m-7-mb-24 {
+    margin: 7px;
+    margin-bottom: 24px;
+}
+
+.label {
+    display: inline;
+    padding: .2em .6em .3em;
+    /* font-size: 75%; */
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+}
+
+.label-success {
+    background-color: #5cb85c;
+}
+
+.label-default {
+    background-color: #777;
+}
+
+.label-danger {
+    background-color: #d9534f;
+}
+
+.position {
+    position: absolute;
+    right: 27px;
+    top: 130px;
+}
+
+table {
+    text-align: center;
+    /* font-size: 12px !important; */
+}
+
+.menu-custom {
+    width: 12.25rem;
+}
+
+

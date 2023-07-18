@@ -13,12 +13,16 @@ class OccasionPricingService {
         return $this->occasionPricingRepository->all();
     }
     public function createOccasionPricing($data = []){
-        $this->occasionPricingRepository->create($data);
+        return $this->occasionPricingRepository->create($data);
     }
     public function updateOccasionPricing($id, $data = []){
-        $this->occasionPricingRepository->update($id, $data);
+        return $this->occasionPricingRepository->update($id, $data);
     }
     public function deleteOccasionPricing($id){
-        $this->occasionPricingRepository->delete($id);
+        return $this->occasionPricingRepository->delete($id);
+    }
+
+    public function findOccasionPricingById($id){
+        return $this->occasionPricingRepository->findByID($id);
     }
 }

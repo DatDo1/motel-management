@@ -21,4 +21,7 @@ class UserService {
     public function deleteUser($id){
         return $this->userRepository->delete($id);
     }
+    public function findByEmail($email){
+        return $this->userRepository->findByEmail($email);
+    }
 }

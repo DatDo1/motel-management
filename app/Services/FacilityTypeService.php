@@ -13,12 +13,16 @@ class FacilityTypeService {
         return $this->facilityTypeRepository->all();
     }
     public function createFacilityType($data = []){
-        $this->facilityTypeRepository->create($data);
+        return $this->facilityTypeRepository->create($data);
     }
     public function updateFacilityType($id, $data = []){
-        $this->facilityTypeRepository->update($id, $data);
+        return $this->facilityTypeRepository->update($id, $data);
     }
     public function deleteFacilityType($id){
-        $this->facilityTypeRepository->delete($id);
+        return $this->facilityTypeRepository->delete($id);
     }
+    public function findFacilityTypeByID($id){
+        return $this->facilityTypeRepository->findByID($id);
+    }
+    
 }

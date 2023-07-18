@@ -2,29 +2,46 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Services\FacilityService;
+use App\Http\Controllers\Controller;
+use App\Services\FacilityTypeService;
 
 class FacilityController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * 
      */
+    protected $facilityService; 
+    protected $facilityTypeService;
+    public function __construct(FacilityService $facilityService, FacilityTypeService $facilityTypeService) {
+        $this->middleware('admin');
+        $this->facilityService = $facilityService;
+        $this->facilityTypeService = $facilityTypeService;
+    }
     public function index()
     {
-        return View('admin.facility.facilities');
+        $facilities = [];
+        $facilityList = $this->facilityService->getAllFacilitys();
+        foreach($facilityList as $facility) {
+            if($facility->delete_flag == 0){
+                array_push($facilities, $facility);
+            }
+        }
+        return View('admin.facility.facilities', compact('facilities'));
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * 
      */
     public function create()
     {
-        //
+        $facilityTypes = $this->facilityTypeService->getAllFacilityTypes();
+        return View('admin.facility.create_facility', compact('facilityTypes'));
     }
 
     /**

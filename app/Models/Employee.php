@@ -12,14 +12,19 @@ class Employee extends Model
     use HasFactory;
     protected $fillable = [
         'uuid',
-        'credit_card',
-        'user_id',
+        'start_date',
+        'basic_salary',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'delete_flag',
+        'user_id'
     ];
 
     public function user(): BelongsTo{
-        return $this->belongsTo(User::class, 'users');
+        return $this->belongsTo(User::class);
     }
     public function invoices(): HasMany{
-        return $this->hasMany(Invoice::class, 'invoices');
+        return $this->hasMany(Invoice::class);
     }
 }

@@ -12,14 +12,18 @@ class Customer extends Model
     use HasFactory;
     protected $fillable = [
         'uuid',
-        'start_date',
-        'basic_salary',
+        'credit_card',
         'user_id',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'delete_flag',
+        'user_id'
     ];
-    public function bookings(): HasMany{
-        return $this->hasMany(Booking::class, 'bookings');
+    public function bookings(){
+        return $this->hasMany(Booking::class);
     }
-    public function user(): BelongsTo{
-        return $this->belongsTo(User::class, 'users');
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 }

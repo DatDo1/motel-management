@@ -13,12 +13,15 @@ class RoomBookingService {
         return $this->roomBookingRepository->all();
     }
     public function createRoomBooking($data = []){
-        $this->roomBookingRepository->create($data);
+        return $this->roomBookingRepository->create($data);
     }
     public function updateRoomBooking($id, $data = []){
-        $this->roomBookingRepository->update($id, $data);
+        return $this->roomBookingRepository->update($id, $data);
     }
     public function deleteRoomBooking($id){
-        $this->roomBookingRepository->delete($id);
+        return $this->roomBookingRepository->delete($id);
+    }
+    public function findRoomBookingByID($id){
+        return $this->roomBookingRepository->findByID($id);
     }
 }

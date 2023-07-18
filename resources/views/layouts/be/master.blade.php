@@ -25,8 +25,8 @@
       <div class="layout-container">
         <div class="layout-page">
           @yield('content')
+          @yield('footer')
         </div>
-        @yield('footer')
       </div>
     </div>
   </body>

@@ -14,6 +14,7 @@ class RoomBooking extends Model
         'room_id',	
         'uuid',	
         'checkout_date',	
+        'is_available',
         'pay_price',	
         'created_at',	
         'updated_at',	

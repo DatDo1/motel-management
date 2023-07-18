@@ -13,6 +13,7 @@ class Facility extends Model
         'uuid',	
         'name',	
         'price',	
+        'facility',
         'created_at',	
         'updated_at',	
         'deleted_at',	

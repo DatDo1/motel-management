@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\OccasionPricing_RoomType;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 class RoomType extends Model
 {
@@ -11,8 +13,6 @@ class RoomType extends Model
     protected $fillable = [
         'uuid',	
         'name',	
-        'people_quantity',	
-        'bed_type',	
         'description',	
         'created_at',	
         'updated_at',	
@@ -20,9 +20,10 @@ class RoomType extends Model
         'deleted_at'
     ];
     public function rooms(){
-        return $this->hasMany(Room::class, 'rooms');
+        return $this->hasMany(Room::class);
     }
     public function occasion_pricings(){
-        return $this->belongsToMany(OccasionPricing::class, 'occasion_pricing__room_types');
+        return $this->belongsToMany(OccasionPricing::class, 'room_type__occasion_pricing', 'room_type_id', 'occasion_pricing_id')->withPivot('real_price');
     }
+
 }

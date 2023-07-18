@@ -13,12 +13,15 @@ class RoomTypeService {
         return $this->roomTypeRoomTypeRepository->all();
     }
     public function createRoomType($data = []){
-        $this->roomTypeRoomTypeRepository->create($data);
+        return $this->roomTypeRoomTypeRepository->create($data);
     }
     public function updateRoomType($id, $data = []){
-        $this->roomTypeRoomTypeRepository->update($id, $data);
+        return $this->roomTypeRoomTypeRepository->update($id, $data);
     }
     public function deleteRoomType($id){
-        $this->roomTypeRoomTypeRepository->delete($id);
+        return $this->roomTypeRoomTypeRepository->delete($id);
+    }
+    public function findRoomTypeById($id){
+        return $this->roomTypeRoomTypeRepository->findById($id);
     }
 }

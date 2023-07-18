@@ -12,13 +12,16 @@ class RoomService {
     public function getAllRooms() {
         return $this->roomRepository->all();
     }
+    public function findById($id) {
+        return $this->roomRepository->findById($id);
+    }
     public function createRoom($data = []){
-        $this->roomRepository->create($data);
+        return $this->roomRepository->create($data);
     }
     public function updateRoom($id, $data = []){
-        $this->roomRepository->update($id, $data);
+        return $this->roomRepository->update($id, $data);
     }
     public function deleteRoom($id){
-        $this->roomRepository->delete($id);
+        return $this->roomRepository->delete($id);
     }
 }

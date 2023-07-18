@@ -13,12 +13,15 @@ class BookingService {
         return $this->bookingRepository->all();
     }
     public function createBooking($data = []){
-        $this->bookingRepository->create($data);
+         return $this->bookingRepository->create($data);
     }
     public function updateBooking($id, $data = []){
-        $this->bookingRepository->update($id, $data);
+         return $this->bookingRepository->update($id, $data);
     }
     public function deleteBooking($id){
-        $this->bookingRepository->delete($id);
+         return $this->bookingRepository->delete($id);
+    }
+    public function findBookingByID($id){
+        return $this->bookingRepository->findByID($id);
     }
 }

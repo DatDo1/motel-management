@@ -491,6 +491,13 @@ ol {
 	margin-bottom: 35px;
 }
 
+.hero__text h3 {
+	color: #E9AD28;
+	text-transform: uppercase;
+	letter-spacing: 4px;
+	margin-bottom: 35px;
+}
+
 .hero__text h2 {
 	font-size: 72px;
 	color: #ffffff;
@@ -1461,6 +1468,7 @@ ol {
 
 .about {
 	padding-bottom: 60px;
+
 }
 
 .about__content {

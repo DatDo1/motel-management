@@ -11,12 +11,13 @@ class OccasionPricing extends Model
     protected $fillable = [
         'uuid',
         'time',
+        'description',
         'created_at',
         'updated_at',
         'deleted_at',
         'delete_flag',
     ];
-    public function room_types(){
-        return $this->belongsToMany(RoomType::class, 'occasion_pricing__room_types');
-    }
+    // public function room_types(){
+    //     return $this->belongsToMany(RoomType::class, 'room_type__occasion_pricing', 'occasion_pricing_id', 'room_type_id')->withPivot('real_price');
+    // }
 }

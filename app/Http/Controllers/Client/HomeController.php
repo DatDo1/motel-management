@@ -2,19 +2,65 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Services\RoomService;
+use App\Services\BookingService;
+use App\Services\CustomerService;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Services\RoomBookingService;
 
 class HomeController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * 
      */
+    protected $bookingService;
+    protected $roomService;
+    protected $customerService;
+    protected $roomBookingService;
+    public function __construct(BookingService $bookingService = null, RoomService $roomService = null, CustomerService $customerService = null, RoomBookingService $roomBookingService = null) {
+        $this->bookingService = $bookingService;
+        $this->roomService = $roomService;
+        $this->customerService = $customerService;
+        $this->roomBookingService = $roomBookingService;
+    }
     public function index()
     {
-        return View('client.index');
+        $roomList = [];
+        $roomBookingList = [];
+        $rooms = $this->roomService->getAllRooms();
+        $roomBookings = $this->roomBookingService->getAllRoomBookings();
+        // foreach($rooms as $room){   
+        //     if($room->delete_flag == 0){
+        //         $roomBookeds = DB::table('room_bookings')->where('room_id', '=', $room->id)->get();
+        //         if($roomBookeds->isNotEmpty()){
+        //             foreach($roomBookeds as $roomBooked){
+        //                     if($roomBooked->checkin_date == Carbon::now()->toDateString() || $roomBooked->checkout_date == Carbon::now()->toDateString()){
+        //                         $room->is_available = $roomBooked->is_available;
+        //                         array_push($roomList, $room);
+        //                         break;
+        //                     }else if($room->id == $roomBooked->room_id){
+        //                             array_push($roomList, $room);
+        //                             break;
+        //                     }
+        //             }
+        //         }else{
+        //             array_push($roomList, $room);
+        //         }
+        //     }
+        // }
+        
+        foreach($rooms as $room){
+            if($room->delete_flag == '0'){
+                array_push($roomList, $room);
+            }
+        }
+        // dd($roomList[0]->image);
+        return View('client.index', compact('roomList'));
     }
 
     /**

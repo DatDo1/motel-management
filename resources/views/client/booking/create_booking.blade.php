@@ -40,48 +40,49 @@
                 <label class="col-sm-3 col-form-label" for="basic-default-room_quantity">Phòng</label>
                 <div class="col-sm-8">
                   <div class="row" id="room_list">
+                    @if(Session::has('room_bookings'))
                       @foreach (session('room_bookings') as $room)
                           <div class="">
-                            <input type="button" class="w-100" value="{{$room->name}}" id="room-{{$room->name}}" onclick="createBooking(this)">
+                            <input type="button" class="w-100" value="{{$room->name}}" id="room-{{$room->name}}" room_id="{{$room->id}}" onclick="createDetailBooking(this)">
                             <input type="hidden" name="roomIDs[]" value="{{$room->id}}"/>
                           </div>
                           <div class="pr-4">
                             <i class="fa fa-window-close btn p-0" style="font-size:22px" onclick="removeRoom(this)" room_id="{{$room->id}}"></i>
                           </div>
                       @endforeach
+                    @endif
                   </div>
                 </div>
               </div>
 
-              {{-- <div class="row mb-3">
-                    <div class="col-sm-10">
-                      <div class="input-group input-group-merge">
-                        <input
-                          type="hidden"
-                          id="checkin_date"
-                          class="form-control"
-                          aria-describedby="basic-default-checkin_date"
-                          name="checkin_date"
-                          value="{{$checkin_date}}"
-                          />
-                      </div>
-                    </div>              
-              </div> --}}
-
-              {{-- <div class="row mb-3">
-                <div class="col-sm-10">
-                  <div class="input-group input-group-merge">
-                    <input
-                      type="hidden"
-                      id="checkout_date"
-                      class="form-control"
-                      aria-describedby="basic-default-checkout_date"
-                      name="checkout_date"
-                      value="{{$checkout_date}}"
-                      />
-                  </div>
-                </div>              
-              </div> --}}
+              @if(Session::has('date_booking') && Session::get('date_booking') != null)
+                @foreach (session('date_booking') as $date)
+                 
+                    <div class="input-group input-group-merge">
+                      <input
+                        type="hidden"
+                        id="checkin_date-{{$date['room_id']}}"
+                        class="form-control"
+                        aria-describedby="basic-default-checkin_date"
+                        name="checkin_date"
+                        value="{{$date['checkin_date']}}"
+                       
+                        />
+                    </div>
+      
+                    <div class="input-group input-group-merge">
+                      <input
+                        type="hidden"
+                        id="checkout_date-{{$date['room_id']}}"
+                        class="form-control"
+                        aria-describedby="basic-default-checkout_date"
+                        name="checkout_date"
+                        value="{{$date['checkout_date']}}"
+                       
+                        />
+                    </div>
+                  @endforeach
+                @endif
 
               @if (Auth::check())
                 <div class="cus-infor">
@@ -191,13 +192,6 @@
                     </div>
                   </div>
                 </div>
-
-                <div class="row mb-3">
-                  <label class="col-sm-3 col-form-label" for="basic-default-people_quantity">Số lượng người tất cả</label>
-                  <div class="col-sm-8">
-                    <input type="text" class="form-control" id="basic-default-people_quantity" name="peopleQuantity" value="{{old('peopleQuantity')}}" required/>
-                  </div>
-                </div>  
 
                 <div class="row mb-3">
                   <label class="col-sm-3 col-form-label" for="basic-default-order_request">Thêm yêu cầu khác</label>
@@ -329,7 +323,15 @@
                   </div>
               </div>
               @endif
-
+              <div class="row mb-3 h4">
+                <label class="col-sm-7 col-form-label">Tổng tiền đặt phòng</label>
+                <div class="col-sm-5 col-form-label" id="booking_total_price">
+                  {{-- @if(Session::get('booking_total_price') != null)
+                    {{Session::get('booking_total_price')}}
+                  @endif --}}
+                </div>              
+              </div>
+              <br>
               <div class="row justify-content-end">
                 <div class="col-sm-10">
                   <button type="submit" class="btn btn-primary">Thêm đặt phòng</button>
@@ -386,13 +388,13 @@
 
 
     
-    function createBooking(room){
+    function createDetailBooking(room){
       // $("#booking-form").css("width", "50%");
-
-      var checkin_date = $("#checkin_date").val()?$("#checkin_date").val():"";
-      var checkout_date = $("#checkout_date").val()?$("#checkout_date").val():"";
-      var room = $(room).val();
-
+      var room_id = $(room).attr("room_id");
+      var checkin_date = $("#checkin_date-"+room_id).val()?$("#checkin_date-"+room_id).val():"";
+      var checkout_date = $("#checkout_date-"+room_id).val()?$("#checkout_date-"+room_id).val():"";
+      var room = $(room).val();      // room name
+ 
       $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -403,6 +405,8 @@
         url: '{{route('cus.bookings.createDetail')}}',
         method: 'POST',
         data: {
+          checkin_date : checkin_date,
+          checkout_date : checkout_date,
           room : room
         },
         success: function (data) {
@@ -565,6 +569,7 @@
       var checkout_date = $("#checkout_detail_date").val();
       var roomName = $(".room").val();
       var peopleList = $("#people_list").val();
+      var room_total_price = $("#room_total_price").attr("room_total_price");
 
 
       $.ajaxSetup({
@@ -580,17 +585,21 @@
           checkin_date: checkin_date, 
           checkout_date: checkout_date,
           room : roomName,
-          peopleList : peopleList
+          peopleList : peopleList,
+          room_total_price: room_total_price
         },
         success: function (data) {
-          if(data){
+          if(data == "/login"){
             window.location = data;
+          }else{
+            $("#booking_total_price").html(`${data} VND`);
           }
         }
       });
 
       $('#detail-booking').html("");
-      $("#room-"+roomName).attr("disabled", true);
+      $("#room-"+roomName).attr("disabled", true);   //khi f5 van hien ra
+    
     }
 
     function removeRoom(room){
@@ -612,6 +621,34 @@
           $('#room_list').html(data);
         }
       });
+    }
+
+    function changeDate(date){
+      var checkin_detail_date = $("#checkin_detail_date").val();
+      var checkout_detail_date = $("#checkout_detail_date").val();
+      var room_id = $(date).attr('room_id');
+
+      $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+      });
+
+      $.ajax({
+        url: '{{route('users.bookings.roomTotalPrice')}}',
+        method: 'POST',
+        data: {
+          checkin_detail_date : checkin_detail_date,
+          checkout_detail_date : checkout_detail_date,
+          room_id : room_id,
+        },
+        success: function (data) {
+          if(data != ""){
+            $('#room_total_price').html(`${data} VND`);
+          }
+        }
+      });
+
     }
   </script>
 @endsection

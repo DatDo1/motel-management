@@ -21,8 +21,8 @@
             <p>Giá phòng {{$room->reference_price}} VND/đêm</p>
         </div>
 
-        <div class="btn label label-yellow p-2">
-            Đặt phòng
+        <div class="btn label label-yellow p-2" id="btn_addBooking" onclick="addBookingtoCart(this)" room_id="{{$room->id}}">
+            Thêm đặt phòng
         </div>
     </div>
         

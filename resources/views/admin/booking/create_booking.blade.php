@@ -73,8 +73,8 @@
                 {{-- </div>              
               </div> --}}
 
-              <div class="row">
-                <label class="col-sm-2 col-form-label" for="basic-default-email">Khách hàng</label>
+              <div class="row create-new-cus">
+                <label class="col-sm-2 col-form-label" for="basic-default">Khách hàng</label>
                 <div class="col-sm-6">
                       <input type="text" class="form-control" name="search" id="searchUser" required>
                       <input type="hidden" class="form-control" name="cusID" id="cusID">
@@ -96,13 +96,6 @@
 
                 <div class="cus-infor">
                 </div>
-
-                <div class="row mb-3">
-                  <label class="col-sm-2 col-form-label" for="basic-default-people_quantity">Số lượng người</label>
-                  <div class="col-sm-10">
-                    <input type="text" class="form-control" id="basic-default-people_quantity" name="peopleQuantity" value="{{old('peopleQuantity')}}" required/>
-                  </div>
-                </div>  
 
                 <div class="row mb-3">
                   <label class="col-sm-2 col-form-label" for="basic-default-order_request">Thêm yêu cầu khác</label>
@@ -160,6 +153,25 @@
     function clickResultSearch(cus){
           var cusName = $(cus).attr('cusName');
           var cusID = $(cus).attr('cusID');
+          
+          $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+          });
+
+          $.ajax({
+            url: '{{route('bookings.clickCustomer')}}',
+            method: 'POST',
+            data: {
+              cusID: cusID
+            },
+            success: function (data) {
+              $('.cus-infor').html(data);
+        
+            }
+          });
+
           $('#cusID').val(cusID);
           $('#searchUser').val(cusName);
           $('#user').html("");
@@ -202,7 +214,8 @@
     }
 
     $("#btnAddNewCus").click(function () {
-      $(".cus-infor").html(`
+      $(".create-new-cus").html(`
+
                 <div class="row mb-3">
                   <label class="col-sm-2 col-form-label" for="basic-default-first_name">Họ và tên lót</label>
                   <div class="col-sm-10">
@@ -243,7 +256,7 @@
                   </div>
                 </div>
                 <div class="row mb-3">
-                  <label class="col-sm-2 col-form-label" for="basic-default-email">Email</label>
+                  <label class="col-sm-2 col-form-label" for="basic-default-email">Email người nhận</label>
                   <div class="col-sm-10">
                     <div class="input-group input-group-merge">
                       <input
@@ -305,6 +318,7 @@
       var checkout_date = $("#checkout_detail_date").val();
       var roomName = $(".room").val();
       var peopleList = $("#people_list").val();
+      var total_price = $("#total_price").val();
 
       $.ajaxSetup({
             headers: {
@@ -319,7 +333,8 @@
           checkin_date: checkin_date,
           checkout_date: checkout_date,
           room : roomName,
-          peopleList : peopleList
+          peopleList : peopleList,
+          total_price: total_price,
         },
         success: function (data) {
           // $('#detail-booking').html(data);
@@ -330,7 +345,47 @@
       $("#room-"+roomName).attr("disabled", true);
     }
 
+    function chooseDate(a){
+      var room = $(a).attr('room_id');
+
+
+      $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+      });
+
+      $.ajax({
+        url: '{{route('cus.bookings.checkDate')}}',
+        method: 'POST',
+        data: {
+          room : room
+        },
+        success: function (data) { 
+          if(data != ""){
+            for(let i = 0; i < data[0].length; i++) {
+              var checkinDate = new Date(data[0][i]);
+              var checkoutDate = new Date(data[1][i]);
+
+              var $input = $(a).pickadate();
+              var picker = $input.pickadate('picker')
+              picker.set('min', true);
+              
+              picker.set('disable', [
+                  { from: [checkinDate.getFullYear(),checkinDate.getMonth(),checkinDate.getDate()], to: [checkoutDate.getFullYear(),checkoutDate.getMonth(),checkoutDate.getDate()] },
+              ]);
+            }
+          }else {
+              var $input = $(a).pickadate();
+              var picker = $input.pickadate('picker')
+              picker.set('min', true);
+          }
+        }
+      });
+    }
+    
    
+    
 </script>
 @endsection
 

@@ -78,16 +78,18 @@
                       class="form-control"
                       aria-describedby="checkin_detail_date"
                       name="checkin_date"
-                      value="{{old('checkin_date')}}"
+                      value="{{$checkin_date}}"
                       id="checkin_date"
                       required
                       onclick="chooseDate(this)"
+                      onchange="changeDate(this)"
                       room_id="{{$room->id}}"
                       />
                   </div>
                 </div>              
           </div>
 
+          
           <div class="row mb-3">
             <label class="col-sm-4 col-form-label" for="checkout_detail_date">Ngày đi</label>
             <div class="col-sm-5">
@@ -98,22 +100,17 @@
                   class="form-control datepicker"
                   aria-describedby="checkout_detail_date"
                   name="checkout_date"
-                  value="{{old('checkout_date')}}"
+                  value="{{$checkout_date}}"
                   id="checkout_date"
                   required
                   onclick="chooseDate(this)"
+                  onchange="changeDate(this)"
                   room_id="{{$room->id}}"
                   />
               </div>
             </div>              
           </div>
 
-          <div class="row mb-3">
-            <label class="col-sm-4 col-form-label" for="checkout_">Tổng tiền phòng</label>
-            <div class="col-sm-5">
-              1000000
-            </div>              
-          </div>
 
           <div class="row mb-3">
             <label class="col-sm-12 col-form-label" for="people_list">Danh sách người ở</label>
@@ -129,7 +126,14 @@
             </div>
           </div>
 
-         
+          <div class="row mb-3 h4">
+          <label class="col-sm-7 col-form-label" for="">Tổng tiền phòng</label>
+          @if(isset($totalPrice))
+            <div class="col-sm-5 col-form-label" id="room_total_price" room_total_price="{{$totalPrice}}">
+              {{$totalPrice}} VND 
+            </div>              
+          @endif
+        </div>
 
           <div class="row justify-content-end">
             <div class="col-sm-10">

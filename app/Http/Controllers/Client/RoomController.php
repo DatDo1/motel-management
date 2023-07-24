@@ -173,7 +173,8 @@ class RoomController extends Controller
     }
     public function findRoom(){
         $roomList = $this->roomService->getAllRooms();
-        return View('client.room.findRooms', compact('roomList'));
+        $roomTypeList = $this->roomTypeService->getAllRoomTypes();
+        return View('client.room.findRooms', compact('roomList', 'roomTypeList'));
     }
     public function filterRooms(Request $request){
         $roomBookings = $this->roomBookingService->getAllRoomBookings();
@@ -210,22 +211,6 @@ class RoomController extends Controller
                             // dd(($roomBookings));
                             if($roomBookings->isNotEmpty()){
                                 foreach($roomBookings as $roomBooking){
-                                    // $checkin_date_min = $roomBooking->checkin_date;
-                                    // $checkout_date_min = $roomBooking->checkout_date;
-    
-                                    // if($roomBooking->checkin_date > $checkin_date_max){
-                                    //     $checkin_date_max = $roomBooking->checkin_date;
-                                    // }
-                                    // if($roomBooking->checkout_date > $checkout_date_max){
-                                    //     $checkout_date_max = $roomBooking->checkout_date;
-                                    // }  
-                                    // if($roomBooking->checkin_date < $checkin_date_min){
-                                    //     $checkin_date_min = $roomBooking->checkin_date;
-                                    // }
-                                    // if($roomBooking->checkout_date < $checkout_date_min){
-                                    //     $checkout_date_min = $roomBooking->checkout_date;
-                                    // } 
-    
                                     if($roomBooking->checkin_date <= $request->checkinDate && $request->checkoutDate <= $roomBooking->checkout_date || $roomBooking->checkout_date == $request->checkinDate || $roomBooking->checkin_date == $request->checkoutDate){
                                         continue;
                                     }else {
@@ -242,17 +227,7 @@ class RoomController extends Controller
                                     }
     
                                 }
-                                // if($request->checkinDate > $checkout_date_max && $request->checkoutDate > $checkout_date_max && $checkout_date_max != null){
-                                //     array_push($roomList, $room);
-                                //     // dd($roomList);
-         
-                                // }else if ($request->checkoutDate < $checkin_date_min){
-                                //     if($request->checkinDate < $checkin_date_min){
-                                //         array_push($roomList, $room);
-                                //         // dd($roomList);
-                                //     }
-    
-                                // }
+                                
                                 
                             }else {
                                 // if($request->adult_quantity <= $room->adult_quantity && $request->children_quantity <= $room->children_quantity){
@@ -264,7 +239,6 @@ class RoomController extends Controller
                     }
 
                 }
-
 
                 break;
             case '3':
@@ -326,6 +300,204 @@ class RoomController extends Controller
         
 
         return View('client.room.findbydate', compact('roomList'));
+    }
+    public function findRoomsByOption(Request $request){
+        // dd($request->all());
+        $roomBookings = $this->roomBookingService->getAllRoomBookings();
+        $roomList = [];
+        $rooms = $this->roomService->getAllRooms();
+
+        if($request->checkinDate > $request->checkoutDate){
+            return;
+        }else {
+            foreach($rooms as $room){
+                if($room->delete_flag == 0 ){
+                    $roomBookings = DB::table('room_bookings')->where('room_id', '=', $room->id)->get();
+     
+                    if($roomBookings->isNotEmpty()){
+                        foreach($roomBookings as $roomBooking){
+                            if(count($roomBookings) > 1){ 
+                                if($request->roomType != null){         //room type != null
+                                    if($request->floor != null){        //floor != null
+                                        if($request->price != null){    //price != null
+                                            if($request->roomType == $room->room_type_id){
+                                                if($request->floor == $room->floor){
+                                                    if($request->price >= $room->reference_price){
+                                                        array_push($roomList, $room);   
+                                                    }  
+                                                }
+                                            }
+                                        }else{      //price == null
+                                            if($request->roomType == $room->room_type_id){
+                                                if($request->floor == $room->floor){
+                                                    array_push($roomList, $room);   
+                                                }
+                                            }
+                                        }
+                                    }else{    //floor == null
+                                        if($request->price != null){
+                                            if($request->roomType == $room->room_type_id){
+                                                if($request->price >= $room->reference_price){
+                                                    array_push($roomList, $room);   
+                                                }  
+                                            }
+                                        }else{
+                                            if($request->roomType == $room->room_type_id){
+                                                array_push($roomList, $room);   
+                                            }
+                                        }
+                                    }
+                                }else{      //room type == null
+                                    if($request->floor != null){        
+                                        if($request->price != null){    
+                                            if($request->floor == $room->floor){
+                                                if($request->price >= $room->reference_price){
+                                                    array_push($roomList, $room);   
+                                                }  
+                                            }
+                                        }else{     
+                                            if($request->floor == $room->floor){
+                                                array_push($roomList, $room);   
+                                            }
+                                            
+                                        }
+                                    }else{    
+                                        if($request->price != null){
+                                            if($request->price >= $room->reference_price){
+                                                array_push($roomList, $room);   
+                                            } 
+                                           
+                                        }else{
+                                            array_push($roomList, $room);   
+                                        }
+                                    }
+                                }
+                                     
+                            }else{
+                                if($request->roomType != null){         //room type != null
+                                    if($request->floor != null){        //floor != null
+                                        if($request->price != null){    //price != null
+                                            if($request->roomType == $room->room_type_id){
+                                                if($request->floor == $room->floor){
+                                                    if($request->price >= $room->reference_price){
+                                                        array_push($roomList, $room);   
+                                                    }  
+                                                }
+                                            }
+                                        }else{      //price == null
+                                            if($request->roomType == $room->room_type_id){
+                                                if($request->floor == $room->floor){
+                                                    array_push($roomList, $room);   
+                                                }
+                                            }
+                                        }
+                                    }else{    //floor == null
+                                        if($request->price != null){
+                                            if($request->roomType == $room->room_type_id){
+                                                if($request->price >= $room->reference_price){
+                                                    array_push($roomList, $room);   
+                                                }  
+                                            }
+                                        }else{
+                                            if($request->roomType == $room->room_type_id){
+                                                array_push($roomList, $room);   
+                                            }
+                                        }
+                                    }
+                                }else{      //room type == null
+                                    if($request->floor != null){        
+                                        if($request->price != null){    
+                                            if($request->floor == $room->floor){
+                                                if($request->price >= $room->reference_price){
+                                                    array_push($roomList, $room);   
+                                                }  
+                                            }
+                                        }else{     
+                                            if($request->floor == $room->floor){
+                                                array_push($roomList, $room);   
+                                            }
+                                            
+                                        }
+                                    }else{    
+                                        if($request->price != null){
+                                            if($request->price >= $room->reference_price){
+                                                array_push($roomList, $room);   
+                                            } 
+                                            // dd($roomList);
+                                        }else{
+                                            array_push($roomList, $room);   
+                                            // dd($roomList);   
+
+                                        }
+                                    }
+                                }   
+                                
+                            }
+
+                        }             
+                    }else {
+                        if($request->roomType != null){         //room type != null
+                            if($request->floor != null){        //floor != null
+                                if($request->price != null){    //price != null
+                                    if($request->roomType == $room->room_type_id){
+                                        if($request->floor == $room->floor){
+                                            if($request->price >= $room->reference_price){
+                                                array_push($roomList, $room);   
+                                            }  
+                                        }
+                                    }
+                                }else{      //price == null
+                                    if($request->roomType == $room->room_type_id){
+                                        if($request->floor == $room->floor){
+                                            array_push($roomList, $room);   
+                                        }
+                                    }
+                                }
+                            }else{    //floor == null
+                                if($request->price != null){
+                                    if($request->roomType == $room->room_type_id){
+                                        if($request->price >= $room->reference_price){
+                                            array_push($roomList, $room);   
+                                        }  
+                                    }
+                                }else{
+                                    if($request->roomType == $room->room_type_id){
+                                        array_push($roomList, $room);   
+                                    }
+                                }
+                            }
+                        }else{      //room type == null
+                            if($request->floor != null){        
+                                if($request->price != null){    
+                                    if($request->floor == $room->floor){
+                                        if($request->price >= $room->reference_price){
+                                            array_push($roomList, $room);   
+                                        }  
+                                    }
+                                }else{     
+                                    if($request->floor == $room->floor){
+                                        array_push($roomList, $room);   
+                                    }
+                                    
+                                }
+                            }else{    
+                                if($request->price != null){
+                                    if($request->price >= $room->reference_price){
+                                        array_push($roomList, $room);   
+                                    } 
+                                   
+                                }else{
+                                    array_push($roomList, $room);   
+                                    // dd($roomList);
+                                }
+                            }
+                        } 
+                    }
+
+                }
+            }
+        }
+        return View('client.room.findbydate', compact('roomList'));   
     }
     public function roomBookingView(){
         return View('client.room.room_selected');

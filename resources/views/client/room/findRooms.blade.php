@@ -29,73 +29,62 @@
         <div class="row">
             <div class="col-md-3">
                 <div class="border border-dark p-4">
+                    Loại phòng bạn muốn ở
+                    @if(isset($roomTypeList))
+                        @foreach($roomTypeList as $roomType)
+                            <div class="form-check">
+                                <input class="form-check-input room-type" type="checkbox" value="{{$roomType->id}}" id="" name="room_type"/>
+                                <label class="form-check-label" for="flexCheckDefault">
+                                    {{$roomType->name}}
+                                </label>
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
+
+                <div class="border border-dark p-4">
+                    Chọn tầng bạn mong muốn 
+                    <div class="form-check">
+                        <input class="form-check-input floor" type="checkbox" value="1" id="" name="floor"/>
+                        <label class="form-check-label" for="flexCheckDefault">
+                          Tầng 1
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input floor" type="checkbox" value="2" id="" name="floor"/>
+                        <label class="form-check-label" for="flexCheckChecked">
+                          Tầng 2
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input floor" type="checkbox" value="3" id="" name="floor"/>
+                        <label class="form-check-label" for="flexCheckChecked">
+                          Tầng 3
+                        </label>
+                    </div>
+
+                    {{-- <div class="btn" id="btn_findRoomByPrice" onclick="btn_findRoomByPrice(this)" buttonType="4">
+                        <button>Tìm phòng</button>
+                    </div> --}}
+                </div>
+                <div class="border border-dark p-4">
                     Ngân sách của bạn mỗi đêm
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="300000" id="p300K" name="room_price"/>
+                        <input class="form-check-input price" type="checkbox" value="300000" id="p300K" name="room_price"/>
                         <label class="form-check-label" for="flexCheckDefault">
                           Dưới 300000 VND
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="500000" id="p500K" name="room_price"/>
+                        <input class="form-check-input price" type="checkbox" value="500000" id="p500K" name="room_price"/>
                         <label class="form-check-label" for="flexCheckChecked">
                           Dưới 500000 VND
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="1000000" id="p100K" name="room_price"/>
+                        <input class="form-check-input price" type="checkbox" value="1000000" id="p100K" name="room_price"/>
                         <label class="form-check-label" for="flexCheckChecked">
                           Dưới 1000000 VND
-                        </label>
-                    </div>
-                    {{-- <div class="btn" id="btn_findRoomByPrice" onclick="btn_findRoomByPrice(this)" buttonType="4">
-                        <button>Tìm phòng</button>
-                    </div> --}}
-                </div>
-                <div class="border border-dark p-4">
-                    Chọn diện tích phòng bạn muốn
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="300000" id="p300K" name="room_price"/>
-                        <label class="form-check-label" for="flexCheckDefault">
-                          Tầng 1
-                        </label>
-
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="500000" id="p500K" name="room_price"/>
-                        <label class="form-check-label" for="flexCheckChecked">
-                          Tầng 2
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="1000000" id="p100K" name="room_price"/>
-                        <label class="form-check-label" for="flexCheckChecked">
-                          Tầng 3
-                        </label>
-                    </div>
-                    {{-- <div class="btn" id="btn_findRoomByPrice" onclick="btn_findRoomByPrice(this)" buttonType="4">
-                        <button>Tìm phòng</button>
-                    </div> --}}
-                </div>
-                <div class="border border-dark p-4">
-                    Chọn tầng bạn mong muốn
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="300000" id="p300K" name="room_price"/>
-                        <label class="form-check-label" for="flexCheckDefault">
-                          Tầng 1
-                        </label>
-
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="500000" id="p500K" name="room_price"/>
-                        <label class="form-check-label" for="flexCheckChecked">
-                          Tầng 2
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="1000000" id="p100K" name="room_price"/>
-                        <label class="form-check-label" for="flexCheckChecked">
-                          Tầng 3
                         </label>
                     </div>
                     {{-- <div class="btn" id="btn_findRoomByPrice" onclick="btn_findRoomByPrice(this)" buttonType="4">
@@ -147,9 +136,115 @@
 @section('footer')
     @include('layouts.fe.footer')
     <script>
-        $('input[type="checkbox"]').click(function() {
-            $('input[type="checkbox"]').not(this).prop("checked", false);
-        });
+
+        $('.room-type').on('change', function(){
+            var roomType = null;
+            if($('.room-type').not(this).prop('checked', false)){
+                roomType = null;
+            }
+            if($(this).prop('checked')){
+                roomType = $(this).val();
+            }
+            var floor = $('.floor:checked').val()!=undefined?$('.floor:checked').val():null;
+            var price = $('.price:checked').val()!=undefined?$('.price:checked').val():null;
+            var checkinDate = $('#checkin_date').val();
+            var checkoutDate = $('#checkout_date').val();
+
+            $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+            });
+
+            $.ajax({
+                url: '{{route('users.rooms.findRoomsByOption')}}',
+                method: 'POST',
+                data: {
+                    checkinDate: checkinDate,
+                    checkoutDate: checkoutDate,
+                    roomType: roomType,
+                    floor: floor,
+                    price: price
+                },
+
+                success: function (data) {
+                    $('#roomList').html(data);
+                }
+            });
+        })
+
+        $('.floor').on('change', function(){
+            var floor = null;
+            if($('.floor').not(this).prop('checked', false)){
+                floor = null;
+            }
+            if($(this).prop('checked')){
+                floor = $(this).val();
+            }
+            var roomType = $('.room-type:checked').val()!=undefined?$('.room-type:checked').val():null;
+            var price = $('.price:checked').val()!=undefined?$('.price:checked').val():null;
+            var checkinDate = $('#checkin_date').val();
+            var checkoutDate = $('#checkout_date').val();
+
+            $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+            });
+
+            $.ajax({
+                url: '{{route('users.rooms.findRoomsByOption')}}',
+                method: 'POST',
+                data: {
+                    checkinDate: checkinDate,
+                    checkoutDate: checkoutDate,
+                    roomType: roomType,
+                    floor: floor,
+                    price: price
+                },
+
+                success: function (data) {
+                    $('#roomList').html(data);
+                }
+            });
+        })
+
+        $('.price').on('change', function(){
+            var price = null;
+            if($('.price').not(this).prop('checked', false)){
+                price = null;
+            }
+            if($(this).prop('checked')){
+                price = $(this).val();
+            }
+           
+            var floor = $('.floor:checked').val()!=undefined?$('.floor:checked').val():null;
+            var roomType = $('.room-type:checked').val()!=undefined?$('.room-type:checked').val():null;
+            var checkinDate = $('#checkin_date').val();
+            var checkoutDate = $('#checkout_date').val();
+
+            $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+            });
+
+            $.ajax({
+                url: '{{route('users.rooms.findRoomsByOption')}}',
+                method: 'POST',
+                data: {
+                    checkinDate: checkinDate,
+                    checkoutDate: checkoutDate,
+                    roomType: roomType,
+                    floor: floor,
+                    price: price
+                },
+
+                success: function (data) {
+                    $('#roomList').html(data);
+                }
+            });
+        })
 
         function findmyall(btn){
             var btnType = $(btn).attr('buttonType');
@@ -168,11 +263,11 @@
                 url: '{{route('users.rooms.filterRooms')}}',
                 method: 'POST',
                 data: {
-                checkinDate: checkinDate,
-                checkoutDate: checkoutDate,
-                adult_quantity: adult_quantity,
-                children_quantity: children_quantity,
-                btnType: btnType
+                    checkinDate: checkinDate,
+                    checkoutDate: checkoutDate,
+                    adult_quantity: adult_quantity,
+                    children_quantity: children_quantity,
+                    btnType: btnType
                 },
 
                 success: function (data) {
@@ -217,6 +312,9 @@
 
        function addBookingtoCart(room){
             var room_id = $(room).attr('room_id');
+            var checkin_date = $("#checkin_date").val()!=null?$("#checkin_date").val():"";
+            var checkout_date = $("#checkout_date").val()!=null?$("#checkout_date").val():"";
+
             $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -228,6 +326,8 @@
                 method: 'POST',
                 data: {
                     room_id: room_id,
+                    checkin_date : checkin_date,
+                    checkout_date : checkout_date
                 },
 
                 success: function (data) {
@@ -236,7 +336,10 @@
                         target="_blank"
                         class="btn btn-warning">
                         Phòng đã chọn (${data[0]})
-                        </a>`);
+                        </a>`
+                        );
+                    
+                    
                 }
             });
             

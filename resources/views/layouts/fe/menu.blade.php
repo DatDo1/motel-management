@@ -28,7 +28,7 @@
                                             > Chỉnh sửa thông tin cá nhân
                                             </a>
                                             <a class="dropdown-item" href=""
-                                            > Danh sách những booking đã đặt
+                                            > Booking của tôi
                                             </a>
                                             <a class="dropdown-item" href="{{route('logout')}}"
                                             > Đăng xuất

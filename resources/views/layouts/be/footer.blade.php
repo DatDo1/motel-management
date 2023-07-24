@@ -50,5 +50,8 @@
 <script async defer src="https://buttons.github.io/buttons.js"></script>
 <script src="../../admin/assets/js/config.js"></script>
 
+<script src="../../../client/js/pickadate.js-3.6.2/lib/picker.js"></script>
+<script src="../../../client/js/pickadate.js-3.6.2/lib/picker.date.js"></script>
+<script src="../../../client/js/pickadate.js-3.6.2/lib/picker.time.js"></script>
 <br>
 <br>

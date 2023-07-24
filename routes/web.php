@@ -53,8 +53,12 @@ Route::post('check-date-booking', [CBookingController::class, 'checkDate'])->nam
 Route::post('user/room_detail_bookings', [CBookingController::class, 'storeDetailBookings'])->name('users.room_detail_bookings');
 Route::get('user/find-rooms', [CRoomController::class, 'findRoom'])->name('users.rooms.findRoom');
 Route::post('user/find-rooms', [CRoomController::class, 'filterRooms'])->name('users.rooms.filterRooms');
+Route::post('user/find-rooms-options', [CRoomController::class, 'findRoomsByOption'])->name('users.rooms.findRoomsByOption');
+
 Route::post('user/add-rooms', [CBookingController::class, 'addBookingtoCart'])->name('users.rooms.addBookingtoCart');
 Route::post('user/remove-rooms', [CBookingController::class, 'removeBookingtoCart'])->name('users.rooms.removeBookingtoCart');
+
+Route::post('create-booking/room-total-price', [CBookingController::class, 'roomTotalPrice'])->name('users.bookings.roomTotalPrice');
 
 
 Route::group(['middleware' => 'auth'], function (){
@@ -76,6 +80,7 @@ Route::group(['middleware' => 'auth'], function (){
     Route::post('admin/booking/create/', [BookingController::class, 'createBookingByRoomIDs'])->name('bookings.createBookingByRoomIDs');
     Route::post('admin/booking/create-booking', [BookingController::class, 'findInforCustomer'])->name('bookings.findInforCustomer'); 
     Route::get('admin/booking/create-booking', [BookingController::class, 'searchCustomer'])->name('bookings.searchCustomer');  
+    Route::post('admin/booking/click-booking', [BookingController::class, 'clickCustomer'])->name('bookings.clickCustomer');  
     Route::post('admin/booking/create-detail-booking', [BookingController::class, 'createDetailBooking'])->name('bookings.createDetailBooking'); 
     Route::post('admin/booking/detail-booking', [BookingController::class, 'storeDetailBooking'])->name('bookings.storeDetailBooking'); 
     Route::get('admin/booking/booking-list', [BookingController::class, 'bookedList'])->name('bookings.bookedList'); 

@@ -64,9 +64,7 @@
                 <div>
                     Bạn mới tiến hành lựa chọn phòng để booking.
                 </div>
-                <div>
-                    Vui lòng xác nhận lại thông tin những phòng đã đặt và thực hiện tiền thanh toán đặt cọc phòng.
-                </div>
+
               </div>
               <div class="row">
                 Thông tin khách hàng

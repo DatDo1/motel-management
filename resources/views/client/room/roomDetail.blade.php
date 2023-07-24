@@ -176,6 +176,9 @@
   <script>
     function addBookingtoCart(room){
             var room_id = $(room).attr('room_id');
+            var checkin_date = $("#checkin_date").val()!=null?$("#checkin_date").val():"";
+            var checkout_date = $("#checkout_date").val()!=null?$("#checkout_date").val():"";
+
             $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -187,6 +190,8 @@
                 method: 'POST',
                 data: {
                     room_id: room_id,
+                    checkin_date : checkin_date,
+                    checkout_date : checkout_date
                 },
 
                 success: function (data) {

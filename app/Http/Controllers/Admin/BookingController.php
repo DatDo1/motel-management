@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Mail\BookingMail;
 use App\Services\RoomBookingService;
+use App\Services\RoomTypeService;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
@@ -30,13 +31,15 @@ class BookingController extends Controller
     protected $customerService;
     protected $roomBookingService;
     protected $userService;
-    public function __construct(BookingService $bookingService = null, RoomService $roomService = null, CustomerService $customerService = null, RoomBookingService $roomBookingService = null, UserService $userService) {
+    protected $roomTypeService;
+    public function __construct(BookingService $bookingService = null, RoomService $roomService = null, CustomerService $customerService = null, RoomBookingService $roomBookingService = null, UserService $userService, RoomTypeService $roomTypeService) {
         $this->middleware('employee');
         $this->bookingService = $bookingService;
         $this->roomService = $roomService;
         $this->customerService = $customerService;
         $this->roomBookingService = $roomBookingService;
         $this->userService = $userService;
+        $this->roomTypeService = $roomTypeService;
     }
     public function index()
     {
@@ -64,6 +67,7 @@ class BookingController extends Controller
         $roomList = [];
         $roomBookingList = [];
         $rooms = $this->roomService->getAllRooms();
+        $roomTypes = $this->roomTypeService->getAllRoomTypes();
         $roomBookings = $this->roomBookingService->getAllRoomBookings();
         foreach($rooms as $room){   
             if($room->delete_flag == 0){
@@ -86,7 +90,7 @@ class BookingController extends Controller
             }
         }
         
-        return View('admin.booking.bookings', compact('roomList'));       
+        return View('admin.booking.bookings', compact('roomList', 'roomTypes'));       
     }
 
     /**
@@ -110,26 +114,112 @@ class BookingController extends Controller
         $customerInfor = null;
         $adminEmail = 'doducdat21122001@gmail.com';
         $roomBookingList = [];
+        $booking = null;
         $bookingDetails = Session::get('booking');
         $users = $this->userService->getAllUsers();
-        $customer = $this->customerService->findCustomerById($request->cusID);
-        foreach ($users as $user){
-            if($customer->user_id == $user->id){
-                $customerInfor = $user;
+        // customer đã có account
+        if(isset($request->cusID)){
+            $customer = $this->customerService->findCustomerById($request->cusID);
+            if($customer != null){
+                foreach ($users as $user){
+                    if($user->delete_flag == 0){
+                        if($customer->user_id == $user->id){
+                            $customerInfor = $user;
+                        }
+                    }
+                }
+
+                $customerInfor->first_name = $request->first_name;
+                $customerInfor->last_name = $request->last_name;
+                $customerInfor->phone_number = $request->phone_number;
+                $customerInfor->citizen_identification = $request->citizen_identification;
+                $customerInfor->address = $request->address;
+                $savecustomerInfor = $customerInfor->save();
+
+                $booking = [
+                    'uuid' => Str::uuid(),
+                    'room_quantity' => count($roomBookeds),
+                    'people_quantity' => $request->peopleQuantity,
+                    'other_request' => $request->other_request,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                    'customer_id' => $request->cusID
+                ];
+                $booking = $this->bookingService->createBooking($booking);
+
+            }
+        }else {
+            $user = $this->userService->findByEmail($request->email);
+            
+            if(isset($user)){
+                $user = $this->userService->findByID($user->id);
+                $customer = DB::table('customers')->where('user_id', '=', $user->id)->first();
+                $customer = $this->customerService->findCustomerById($customer->id);
+                if($customer != null){
+                    foreach ($users as $user){
+                        if($user->delete_flag == 0){
+                            if($customer->user_id == $user->id){
+                                $customerInfor = $user;
+                            }
+                        }
+                    }
+                }
+                $customerInfor->first_name = $request->first_name;
+                $customerInfor->last_name = $request->last_name;
+                $customerInfor->phone_number = $request->phone_number;
+                $customerInfor->citizen_identification = $request->citizen_identification;
+                $customerInfor->address = $request->address;
+                $savecustomerInfor = $customerInfor->save();
+                
+                $booking = [
+                    'uuid' => Str::uuid(),
+                    'room_quantity' => count($roomBookeds),
+                    'people_quantity' => $request->peopleQuantity,
+                    'other_request' => $request->other_request,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                    'customer_id' => $customer->id
+                ];
+                $booking = $this->bookingService->createBooking($booking);
+
+            }else{  // ko co user ton tai
+                $data = [
+                    'uuid' => Str::uuid(),
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'phone_number' => $request->phone_number,
+                    'citizen_identification' => $request->citizen_identification,
+                    'address' => $request->address
+                ];
+                $user = $this->userService->createUser($data);
+                $cusData = [
+                    'uuid' => Str::uuid(),
+                    'credit_card' => $request->credit_card,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                    'user_id' => $user->id,
+                ];
+                $customerInfor = $this->customerService->createCustomer($cusData);
+
+                $booking = [
+                    'uuid' => Str::uuid(),
+                    'room_quantity' => count($roomBookeds),
+                    'people_quantity' => $request->peopleQuantity,
+                    'other_request' => $request->other_request,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                    'customer_id' => $customerInfor->id
+                ];
+
+                $booking = $this->bookingService->createBooking($booking);
+
             }
         }
 
-        $booking = [
-            'uuid' => Str::uuid(),
-            'room_quantity' => count($roomBookeds),
-            'people_quantity' => $request->peopleQuantity,
-            'other_request' => $request->other_request,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-            'customer_id' => $request->cusID
-        ];
 
-        $booking = $this->bookingService->createBooking($booking);
+
+       
+
 
         if(Session::has('booking')){
             for($i = 0; $i <count($bookingDetails); $i++){
@@ -141,7 +231,7 @@ class BookingController extends Controller
                     'uuid' => Str::uuid(),
                     'checkout_date' => $bookingDetails[$i]["checkout_date"],
                     'is_available' => '2',
-                    'pay_price' => $room->reference_price,
+                    'pay_price' => $bookingDetails[$i]["total_price"],
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ];
@@ -159,7 +249,8 @@ class BookingController extends Controller
                 'roomBookingList' => $roomBookingList
             ];
 
-            Mail::to($customerInfor->email)
+            // nên để thêm trường email người nhận
+            Mail::to($request->email)
             ->bcc($adminEmail)
             ->send(new BookingMail($data));
 
@@ -239,8 +330,7 @@ class BookingController extends Controller
             $output="";
             $customers = $this->customerService->getAllCustomers();
             $users = DB::table('users')
-            ->where('first_name','LIKE','%'.$request->search."%")
-            ->orWhere('last_name','LIKE','%'.$request->search. "%")
+            ->where('citizen_identification','LIKE','%'.$request->search."%")
             ->get();
             if (count($users) > 0) {
                 foreach ($users as $user) {
@@ -255,10 +345,20 @@ class BookingController extends Controller
             return $output;
         }
     }
+    public function clickCustomer(Request $request){
+        $cus = $this->customerService->findCustomerById($request->cusID);
+        return View('admin.customer.infor', compact('cus'));
+    }
 
     public function createDetailBooking(Request $request){
         $data = $request->all();
-        return View("admin.booking.create_detail_booking", compact('data'));
+        $room = DB::table('rooms')->where('name', '=', $data['room'])->first();
+        $room = $this->roomService->findById($room->id);
+        $checkout_date = Carbon::parse($data['checkout_date']);
+        $checkin_date = Carbon::parse($data['checkin_date']);
+    
+        $totalPrice = $room->reference_price * ($checkin_date->diffInDays($checkout_date, false) + 1);
+        return View("admin.booking.create_detail_booking", compact('data', 'room', 'totalPrice'));
     }
     public function storeDetailBooking(Request $request){
         // khi f5 van luu session
@@ -303,6 +403,8 @@ class BookingController extends Controller
     }
     public function cancelBooking($uuid){
         DB::table('room_bookings')->where('uuid', '=', $uuid)->update(['is_available' => '3']);
+        // gui email
+        
         return redirect('admin/booking/handle-booking');
     }
     public function deleteBooking($uuid){

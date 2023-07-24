@@ -1,4 +1,34 @@
-
+ 
+    <div class="row mb-3">
+      <label class="col-sm-2 col-form-label" for="basic-default-first_name">Họ và tên lót</label>
+      <div class="col-sm-10">
+        <div class="input-group input-group-merge">
+          <input
+            type="text"
+            id="basic-default-first_name"
+            class="form-control"
+            aria-describedby="basic-default-first_name"
+            name="first_name"
+            value="{{$cus->user->first_name}}"
+            />
+        </div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <label class="col-sm-2 col-form-label" for="basic-default-last_name">Tên</label>
+      <div class="col-sm-10">
+        <div class="input-group input-group-merge">
+          <input
+            type="text"
+            id="basic-default-last_name"
+            class="form-control"
+            aria-describedby="basic-default-last_name"
+            name="last_name"
+            value="{{$cus->user->last_name}}"
+            />
+        </div>
+      </div>
+    </div>
     <div class="row mb-3">
       <label class="col-sm-2 col-form-label" for="basic-default-phone_number">Phone Number</label>
       <div class="col-sm-10">
@@ -30,6 +60,7 @@
             aria-describedby="basic-default-email2"
             name="email"
             value="{{$cus->user->email}}"
+            disabled
           />
           <span class="input-group-text" id="basic-default-email2">@gmail.com</span>
         </div>
@@ -106,8 +137,4 @@
       </div>
   </div>
 
-  <div class="row justify-content-end">
-    <div class="col-sm-10">
-      <button type="submit" class="btn btn-primary">Thêm đặt phòng</button>
-    </div>
-  </div>
+ 

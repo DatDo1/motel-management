@@ -12,19 +12,22 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Laravel\Socialite\Facades\Socialite;
+use App\Models\Customer;
 
 class AuthenticationController extends Controller
 {
     protected $userService;
     public function __construct(UserService $userService ) {
         $this->userService = $userService;
+        
     }
     public function login(){
-        session(['link' => url()->previous()]);
+        Session::put('link', url()->previous());
+
         return View('login');
     }
     public function checkLogin(Request $request){
-        // $users = $this->userService->getAllUsers();
+
         if(Auth::attempt(['email' => $request->email,'password' => $request->password])){
             if(Auth::user()->user_level == 3){
                 return redirect(session('link'));
@@ -33,6 +36,8 @@ class AuthenticationController extends Controller
             }else{
                 return redirect('admin/dashboard');
             }
+        }else {
+            return redirect('login');
         }
     }
     public function logout(){
@@ -40,6 +45,8 @@ class AuthenticationController extends Controller
         Session::forget('booking');       // save detail booking
         Session::forget('room_quantity'); // số lượng phòng user chọn
         Session::forget('room_bookings'); // những phòng user chọn
+        Session::forget('date_booking');
+        Session::forget('booking_total_price');
         
         return redirect('/');
     }
@@ -77,9 +84,10 @@ class AuthenticationController extends Controller
 
     public function handleGoogleCallback()
     {
+
         try {
       
-            $user = Socialite::driver('google')->user();
+            $user = Socialite::driver('google')->stateless()->user();
             $is_user = User::where('email', $user->getEmail())->first();
     
             if(!$is_user){
@@ -92,13 +100,20 @@ class AuthenticationController extends Controller
                         'uuid' => Str::uuid(),
                         'last_name' => $user->getName(),
                         'email' => $user->getEmail(),
+                        'password'=> '123',
                         'user_level' => '3',
                         'updated_at' => Carbon::now(),
-                        'createa_at' => Carbon::now()
+                        'created_at' => Carbon::now()
                     ]
                     
                 );
                 // Tao them customer
+                $customer = Customer::updateOrCreate([
+                    'uuid' => Str::uuid(),
+                    'updated_at' => Carbon::now(),
+                    'created_at' => Carbon::now(),
+                    'user_id' => $saveUser->id
+                ]);
        
             }else{
                 
@@ -108,8 +123,12 @@ class AuthenticationController extends Controller
                 $saveUser = User::where('email', $user->getEmail())->first();
              
             }
+
             Auth::loginUsingId($saveUser->id);
-            return redirect(session('link'));
+         
+            $previousUrl = Session::get('link', '/');
+            // dd(Session::has('link'));
+            return redirect()->to($previousUrl);
 
       
         } catch (\Throwable $th) {

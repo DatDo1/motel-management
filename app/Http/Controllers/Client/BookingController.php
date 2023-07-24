@@ -60,7 +60,7 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $roomBookeds = $request->roomIDs;
-        $customerInfor = null;
+        $customer = null;
         $adminEmail = 'doducdat21122001@gmail.com';
         $roomBookingList = [];
         $bookingDetails = Session::get('booking');
@@ -72,7 +72,6 @@ class BookingController extends Controller
         //     }
         // }
         $user = DB::table('users')->where('email', '=', $request->email)->first();
-        // dd($user->id);
         $user = User::find($user->id);
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
@@ -80,11 +79,11 @@ class BookingController extends Controller
         $user->citizen_identification = $request->citizen_identification;
         $user->address = $request->address;
         $saveUser = $user->save();
-        // if($saveUser){     
-        //      update credit customer
-        // }
+       
+        // create customer
         $customer = DB::table('customers')->where('user_id', '=', $user->id)->first();
-        // dd($customer);
+       
+        // dd($user->id);
         $booking = [
             'uuid' => Str::uuid(),
             'room_quantity' => count($roomBookeds),
@@ -108,7 +107,7 @@ class BookingController extends Controller
                     'uuid' => Str::uuid(),
                     'checkout_date' => date('Y-m-d', strtotime($bookingDetails[$i]["checkout_date"])),
                     'is_available' => '2',
-                    'pay_price' => $room->reference_price,   // giá phòng 1 ngày
+                    'pay_price' => $bookingDetails[$i]["room_total_price"],  
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ];
@@ -133,11 +132,12 @@ class BookingController extends Controller
             Session::forget('booking');
             Session::forget('room_quantity');
             Session::forget('room_bookings');
-
+            Session::forget('date_booking');
+            Session::forget('booking_total_price');
         }
 
         // Thiếu invoice
-        return redirect('/find-rooms');
+        return redirect('user/find-rooms');
     }
 
     /**
@@ -193,7 +193,6 @@ class BookingController extends Controller
 
         foreach($room_ids as $room_id){
             array_push($rooms, $this->roomService->findById($room_id));
-
         }
         return View('client.booking.create_booking', compact('rooms', 'customers', 'checkin_date', 'checkout_date'));
     }
@@ -201,11 +200,25 @@ class BookingController extends Controller
         
         return View('client.booking.create_booking');
     }
-    public function createDetailBooking(Request $request){
+    public function createDetailBooking(Request $request){  //View Detail Booking
+        $checkout_date = null;
+        $checkin_date = null;
+        $totalPrice = 0;
         $data = $request->all();
         $room = DB::table('rooms')->where('name', '=', $data['room'])->first();
         $room = $this->roomService->findById($room->id);
-        return View("client.booking.create_detail_booking", compact('data', 'room'));
+
+        if($data['checkin_date'] != null && $data['checkout_date'] != null){
+            $checkout_date = Carbon::parse($data['checkout_date']);
+            $checkin_date = Carbon::parse($data['checkin_date']);
+    
+            $totalPrice = $room->reference_price * ($checkin_date->diffInDays($checkout_date, false) + 1);
+    
+            $checkout_date = Carbon::parse($data['checkout_date'])->format('Y-m-d');
+            $checkin_date = Carbon::parse($data['checkin_date'])->format('Y-m-d');
+        }
+
+        return View("client.booking.create_detail_booking", compact('data', 'room', 'totalPrice', 'checkin_date', 'checkout_date'));
     }
     public function checkDate(Request $request){
         $room = $request->all();
@@ -241,15 +254,24 @@ class BookingController extends Controller
     }
     public function storeDetailBookings(Request $request){
         if(Auth::user()){
+            $booking_total_price = Session::get('booking_total_price')!=null?Session::get('booking_total_price'):0;
+
             Session::push('booking', $request->all());
+            $booking_total_price += $request->room_total_price;
             
+            Session::put('booking_total_price', $booking_total_price);
+            return $booking_total_price;
         }else{
             return '/login';
         }
     }
 
     public function addBookingtoCart(Request $request){
+        $checkin_date = $request->checkin_date;
+        $checkout_date = $request->checkout_date;
         $room = $this->roomService->findById($request->room_id);
+
+        $date_booking = Session::get('date_booking')!=null?Session::get('date_booking'):0;
         $room_quantity = Session::get('room_quantity')!=null?Session::get('room_quantity'):0;
         $room_bookings = Session::get('room_bookings')!=null?Session::get('room_bookings'):0;
         if($room_bookings != null){
@@ -258,18 +280,33 @@ class BookingController extends Controller
                     break;  
                 }else{
                     $room_quantity += 1;
-                    array_push($room_bookings, $room);     
+                    array_push($room_bookings, $room);    
+                    array_push($date_booking, [
+                        'room_id' => $room->id,
+                        'checkin_date' => $checkin_date,
+                        'checkout_date' => $checkout_date
+                    ]); 
                 }
                   
             }
         }else{
+            $date_booking = [];
             $room_bookings = [];
             $room_quantity += 1;
             array_push($room_bookings, $room);
+            array_push($date_booking, [
+                'room_id' => $room->id,
+                'checkin_date' => $checkin_date,
+                'checkout_date' => $checkout_date
+            ]); 
         }
+
+        
     
         Session::put('room_quantity', $room_quantity);
         Session::put('room_bookings', $room_bookings);
+        Session::put('date_booking', $date_booking);
+        
         // dd([$room_quantity, $room_bookings]);
         return [$room_quantity, $room_bookings];
     }
@@ -287,5 +324,23 @@ class BookingController extends Controller
         Session::put('room_bookings', $room_bookings);
         // dd([$room_quantity, $room_bookings]);
         return View('client.booking.room_booking', compact('room_bookings'));
+    }
+    public function roomTotalPrice(Request $request){  
+        // dd($request->all());
+        $room = $this->roomService->findById($request->room_id);
+        $checkin_detail_date = Carbon::parse($request->checkin_detail_date);
+        $checkout_detail_date = Carbon::parse($request->checkout_detail_date);
+        if($request->checkin_detail_date == null || $request->checkout_detail_date == null){
+            // thong bao
+            return;
+        }else {
+            if($checkin_detail_date > $checkout_detail_date){
+                // thong bao
+                return;
+            }else {
+                $day_quantity = ($checkin_detail_date->diffInDays($request->checkout_detail_date)+1);
+                return $day_quantity * $room->reference_price;
+            }
+        }            
     }
 }
